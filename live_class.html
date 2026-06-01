@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Class - Axel Classes</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, sans-serif; }
+        body { background-color: #0b132b; color: #fff; padding-bottom: 20px; }
+
+        /* हेडर बार */
+        .live-header { display: flex; align-items: center; gap: 15px; padding: 15px; background: #1c2541; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .live-header i { font-size: 20px; cursor: pointer; color: #00b4d8; }
+        .live-header h3 { font-size: 16px; font-weight: 600; }
+
+        /* वीडियो प्लेयर कंटेनर */
+        .video-container { width: 100%; aspect-ratio: 16/9; background: #000; position: relative; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        .video-container iframe { width: 100%; height: 100%; border: none; display: none; }
+        
+        /* ऑफलाइन या अपकमिंग होने पर दिखने वाला पर्दा */
+        .video-placeholder { position: absolute; top:0; left:0; width:100%; height:100%; background: #111; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; z-index: 10; }
+        .video-placeholder i { font-size: 50px; color: #ff4d4d; margin-bottom: 12px; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
+        .video-placeholder p { font-size: 15px; font-weight: 600; }
+
+        /* क्लास की जानकारी */
+        .class-details { padding: 16px; background: #1c2541; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .status-badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; margin-bottom: 8px; text-transform: uppercase; }
+        .status-badge.live { background: #ff4d4d; color: #fff; }
+        .status-badge.upcoming { background: #ffb703; color: #0b132b; }
+        .class-title { font-size: 17px; font-weight: 700; color: #fff; line-height: 1.4; }
+
+        /* लाइव डाउट/चैट बॉक्स */
+        .chat-section { padding: 16px; margin-top: 10px; }
+        .chat-title { font-size: 14px; font-weight: 700; color: #a5a5a5; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
+        .chat-box { background: #111a36; border-radius: 12px; height: 180px; padding: 12px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; border: 1px solid rgba(255,255,255,0.03); }
+        
+        .chat-msg { font-size: 13px; line-height: 1.4; background: rgba(255,255,255,0.02); padding: 6px 10px; border-radius: 6px; }
+        .chat-msg strong { color: #00b4d8; }
+        
+        /* चैट इनपुट बार */
+        .chat-input-bar { display: flex; gap: 8px; margin-top: 10px; }
+        .chat-input-bar input { flex: 1; padding: 12px; background: #1c2541; border: 1px solid rgba(255,255,255,0.08); color: #fff; border-radius: 8px; font-size: 13px; outline: none; }
+        .chat-send-btn { background: #00b4d8; border: none; color: #0b132b; width: 45px; border-radius: 8px; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 16px; }
+    </style>
+</head>
+<body>
+
+    <div class="live-header">
+        <i class="fas fa-arrow-left" onclick="goBack()"></i>
+        <h3>लाइव क्लासरूम (Live Classroom)</h3>
+    </div>
+
+    <div class="video-container">
+        <div id="fallback-screen" class="video-placeholder">
+            <i class="fas fa-video-slash"></i>
+            <p id="fallback-text">लाइव क्लास की स्थिति जांची जा रही है...</p>
+        </div>
+        
+        <iframe id="live-video-player" src="" allowfullscreen></iframe>
+    </div>
+
+    <div class="class-details">
+        <span id="class-status-badge" class="status-badge live" style="display: none;">🔴 LIVE</span>
+        <div id="class-main-title" class="class-title">क्लास लोड हो रही है...</div>
+    </div>
+
+    <div class="chat-section">
+        <div class="chat-title"><i class="fas fa-comments"></i> लाइव डाउट बॉक्स (Ask Doubt)</div>
+        <div class="chat-box" id="chat-messages-container">
+            </div>
+        <div class="chat-input-bar">
+            <input type="text" id="student-msg-input" placeholder="अपना सवाल यहाँ टाइप करें...">
+            <button class="chat-send-btn" onclick="sendDoubt()"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <script>
+        // आपके डेटाबेस के आधार पर ऑटो-कॉन्फ़िगर की गई चाबियां
+        const firebaseConfig = {
+            apiKey: "AIzaSyAsD_G1VnMvW_0KM3GkMe5Xwj7YcU9zI4Y0", 
+            authDomain: "axel-classes-4705f.firebaseapp.com",
+            databaseURL: "https://axel-classes-4705f-default-rtdb.firebaseio.com/",
+            projectId: "axel-classes-4705f",
+            storageBucket: "axel-classes-4705f.appspot.com",
+            messagingSenderId: "774231841374",
+            appId: "1:774231841374:web:806c9e03d7c5ee1e76b92f"
+        };
+        
+        // फायरबेस चालू करना
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const database = firebase.database();
+
+        window.onload = function() {
+            const player = document.getElementById('live-video-player');
+            const fallback = document.getElementById('fallback-screen');
+            const fallbackText = document.getElementById('fallback-text');
+            const titleElement = document.getElementById('class-main-title');
+            const badge = document.getElementById('class-status-badge');
+
+            // 1. फायरबेस से लाइव क्लास की स्थिति को रियल-टाइम में ट्रैक करना
+            database.ref('live_stream').on('value', (snapshot) => {
+                const live = snapshot.val();
+                
+                if (live) {
+                    titleElement.innerText = live.title || "Axel Classes Special Live Session";
+
+                    if (live.status === "🔴 LIVE NOW" && live.url) {
+                        let videoId = extractVideoID(live.url);
+                        if (videoId) {
+                            player.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+                            player.style.display = "block";
+                            fallback.style.display = "none";
+                        } else {
+                            showOfflineMode(player, fallback, fallbackText, "गलत वीडियो लिंक! कृपया एडमिन से संपर्क करें।");
+                        }
+                        badge.style.display = "inline-block";
+                        badge.innerText = "🔴 LIVE";
+                        badge.className = "status-badge live";
+
+                    } else if (live.status === "⏳ UPCOMING") {
+                        showOfflineMode(player, fallback, fallbackText, "⏳ यह क्लास आगामी समय के लिए शेड्यूल है। सही समय पर शुरू होगी!");
+                        badge.style.display = "inline-block";
+                        badge.innerText = "⏳ UPCOMING";
+                        badge.className = "status-badge upcoming";
+                    } else {
+                        showOfflineMode(player, fallback, fallbackText, "❌ अभी कोई लाइव क्लास चालू नहीं है। कृपया रिकॉर्डेड कोर्स देखें।");
+                        badge.style.display = "none";
+                    }
+                } else {
+                    showOfflineMode(player, fallback, fallbackText, "❌ अभी कोई लाइव क्लास शेड्यूल नहीं की गई है।");
+                    titleElement.innerText = "कोई एक्टिव क्लास नहीं है";
+                    badge.style.display = "none";
+                }
+            });
+
+            // 2. डेटाबेस से चैट मैसेजेस को लाइव सुनना
+            database.ref('chats').on('value', (snapshot) => {
+                const container = document.getElementById('chat-messages-container');
+                container.innerHTML = ""; // पुराना साफ़ करें
+                
+                const data = snapshot.val();
+                if(data) {
+                    Object.keys(data).forEach((key) => {
+                        const msg = data[key];
+                        container.innerHTML += `
+                            <div class="chat-msg">
+                                <strong>${msg.studentName}:</strong> ${msg.message}
+                            </div>
+                        `;
+                    });
+                    container.scrollTop = container.scrollHeight;
+                } else {
+                    container.innerHTML = `<div style="color: #a5a5a5; font-size: 12px; text-align: center; margin-top: 20px;">कोई भी डाउट हो तो नीचे कमेंट में पूछें।</div>`;
+                }
+            });
+        };
+
+        // यूट्यूब यूआरएल से आईडी निकालने का फंक्शन
+        function extractVideoID(url) {
+    if (!url) return null;
+    let regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|live\/)([^#\&\?]*).*/;
+    let match = url.match(regExp);
+    return (match && match[2] && match[2].trim().length === 11) ? match[2].trim() : null;
+}
+
+        
+
+        function showOfflineMode(player, fallback, textId, msg) {
+            player.style.display = "none";
+            player.src = ""; // वीडियो रोकना
+            fallback.style.display = "flex";
+            textId.innerText = msg;
+        }
+
+        // 3. छात्र द्वारा डाउट को सीधे डेटाबेस पर भेजना
+        function sendDoubt() {
+            const input = document.getElementById('student-msg-input');
+            const msgText = input.value.trim();
+            if(!msgText) return;
+
+            // प्रोफ़ाइल या लोकल स्टोरेज से छात्र की असली जानकारी निकालना
+            let studentName = "विद्यार्थी";
+            let studentClass = "General";
+            let studentVillage = "साहदौरा";
+
+            // आपके प्रोफ़ाइल स्क्रीनशॉट के अनुसार सेव्ड सेशन डेटा चेक करना
+            const session = localStorage.getItem('axcel_user_session') || localStorage.getItem('user_profile_data');
+            if(session) {
+                const pData = JSON.parse(session);
+                studentName = pData.name || pData.firstName || "विद्यार्थी";
+                if(pData.lastName) studentName += " " + pData.lastName;
+                studentClass = pData.class || pData.selectedClass || "General";
+                studentVillage = pData.village || pData.area || "साहदौरा";
+            }
+
+            // फायरबेस की 'chats' टेबल में नया मैसेज पुश करना
+            const newChatRef = database.ref('chats').push();
+            newChatRef.set({
+                studentName: studentName,
+                studentClass: studentClass,
+                village: studentVillage,
+                message: msgText,
+                timestamp: Date.now()
+            }).then(() => {
+                input.value = ""; // इनपुट साफ़ करें
+            }).catch((err) => {
+                alert("मैसेज भेजने में समस्या आई: " + err.message);
+            });
+        }
+
+        function goBack() {
+            if (window.parent && window.parent.changeScreen) {
+                window.parent.changeScreen('dashboard.html');
+            } else {
+                window.location.href = 'dashboard.html';
+            }
+        }
+    </script>
+</body>
+</html>

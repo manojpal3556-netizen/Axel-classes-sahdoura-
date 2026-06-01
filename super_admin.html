@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super Admin Panel - Axel Classes</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, sans-serif; }
+        body { background-color: #0b132b; color: #fff; padding: 20px 15px; user-select: none; }
+        
+        /* हेडर */
+        .admin-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #ff4d4d; padding-bottom: 15px; margin-bottom: 25px; }
+        .admin-header h2 { font-size: 20px; color: #ff4d4d; display: flex; align-items: center; gap: 10px; }
+        .exit-btn { background: #1c2541; border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 8px 15px; border-radius: 8px; cursor: pointer; font-size: 13px; }
+
+        /* कंट्रोल कार्ड्स */
+        .control-card { background: #1c2541; border-radius: 15px; padding: 20px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        .card-title { font-size: 16px; font-weight: 600; margin-bottom: 15px; color: #00b4d8; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+        
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-size: 13px; color: #a5a5a5; margin-bottom: 6px; }
+        input, select { width: 100%; padding: 12px; background: #0b132b; border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 8px; outline: none; font-size: 14px; }
+        input:focus, select:focus { border-color: #00b4d8; }
+        
+        .btn-save { background: linear-gradient(90deg, #ff4d4d, #d90429); color: white; border: none; padding: 14px; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px; transition: 0.2s; }
+        .btn-save:active { transform: scale(0.98); }
+
+        /* लाइव डाउट बॉक्स मॉनिटर */
+        .live-chat-monitor { background: #0b132b; border-radius: 10px; height: 250px; overflow-y: auto; padding: 12px; border: 1px solid rgba(255,77,77,0.2); display: flex; flex-direction: column; gap: 10px; }
+        .admin-chat-msg { background: rgba(255,255,255,0.03); padding: 10px 12px; border-radius: 8px; font-size: 13px; line-height: 1.5; border-left: 3px solid #00b4d8; }
+        .admin-chat-msg strong { color: #ffb703; }
+        .admin-chat-msg .msg-meta { font-size: 11px; color: #a5a5a5; margin-top: 4px; display: block; }
+        .clear-chat-btn { background: rgba(255, 77, 77, 0.1); border: 1px solid #ff4d4d; color: #ff4d4d; padding: 6px 14px; border-radius: 50px; font-size: 12px; cursor: pointer; float: right; margin-top: -34px; font-weight: 600; }
+    </style>
+</head>
+<body>
+
+    <div class="admin-header">
+        <h2><i class="fas fa-user-cog"></i> सुपर एडमिन कंट्रोल पैनल</h2>
+        <button class="exit-btn" onclick="exitAdmin()">बाहर जाएं</button>
+    </div>
+
+    <div class="control-card">
+        <div class="card-title"><i class="fas fa-broadcast-tower"></i> लाइव क्लास कंट्रोल रूम (Real-Time)</div>
+        
+        <div class="form-group">
+            <label>लाइव क्लास का विषय/शीर्षक (Topic Title):</label>
+            <input type="text" id="live-title" placeholder="उदा. 10th मैथ - त्रिकोणमिति लाइव क्लास">
+        </div>
+        
+        <div class="form-group">
+            <label>यूट्यूब लाइव स्ट्रीमिंग लिंक (YouTube Stream Link):</label>
+            <input type="text" id="live-url" placeholder="https://youtube.com/live/your-video-id">
+        </div>
+        
+        <div class="form-group">
+            <label>क्लास का करंट स्टेटस (Class Status):</label>
+            <select id="live-status">
+                <option value="🔴 LIVE NOW">🔴 अभी लाइव चालू करें (Live Now)</option>
+                <option value="⏳ UPCOMING">⏳ आगामी शेड्यूल करें (Upcoming)</option>
+                <option value="OFFLINE">❌ बंद करें / ऑफलाइन (Offline)</option>
+            </select>
+        </div>
+        
+        <button class="btn-save" onclick="broadcastLive()">🚀 लाइव क्लास ऐप पर ब्रॉडकास्ट करें</button>
+    </div>
+
+    <div class="control-card">
+        <div class="card-title"><i class="fas fa-comments"></i> छात्र लाइव डाउट मॉनिटर</div>
+        <button class="clear-chat-btn" onclick="clearAllChats()">चैट खाली करें</button>
+        <div class="live-chat-monitor" id="admin-chat-container">
+            <div style="text-align: center; color: #a5a5a5; font-size: 13px; margin-top: 30px;">छात्रों के सवाल यहाँ रियल-टाइम में दिखाई देंगे...</div>
+        </div>
+    </div>
+
+    <script>
+        // आपके स्क्रीनशॉट के अनुसार ऑटो-कॉन्फ़िगर की गई चाबियां
+        const firebaseConfig = {
+            apiKey: "AIzaSyAs" + "D_G1Vn" + "MvW_0K" + "M3GkM" + "e5Xw" + "j7Yc" + "U9z" + "I4Y0", 
+            authDomain: "axel-classes-4705f.firebaseapp.com",
+            databaseURL: "https://axel-classes-4705f-default-rtdb.firebaseio.com/",
+            projectId: "axel-classes-4705f",
+            storageBucket: "axel-classes-4705f.appspot.com",
+            messagingSenderId: "774231841374",
+            appId: "1:774231841374:web:806c9e03d7c5ee1e76b92f"
+        };
+        
+        // फायरबेस सिस्टम चालू करना
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const database = firebase.database();
+
+        // 1. लाइव क्लास का डेटा रियल-टाइम डेटाबेस में भेजना
+        function broadcastLive() {
+            const title = document.getElementById('live-title').value.trim();
+            const url = document.getElementById('live-url').value.trim();
+            const status = document.getElementById('live-status').value;
+
+            if(!title || !url) {
+                alert("भाई, कृपया क्लास का टाइटल और यूट्यूब लिंक दोनों भरें!");
+                return;
+            }
+
+            // डेटाबेस में 'live_stream' नाम के बक्से में डेटा डालना
+            database.ref('live_stream').set({
+                title: title,
+                url: url,
+                status: status,
+                lastUpdated: Date.now()
+            }).then(() => {
+                alert("🔥 बधाई हो भाई! लाइव क्लास का डेटा डेटाबेस पर सेव हो गया है। बच्चों को अब यह दिखने लगेगा।");
+            }).catch((error) => {
+                alert("एरर आया भाई: " + error.message);
+            });
+        }
+
+        // 2. बच्चों द्वारा भेजे गए मैसेजेस को लाइव सुनना
+        database.ref('chats').on('value', (snapshot) => {
+            const container = document.getElementById('admin-chat-container');
+            container.innerHTML = ""; // पुरानी डमी चैट साफ करें
+            
+            const data = snapshot.val();
+            if(data) {
+                // सभी मैसेजेस को स्क्रीन पर सजाना
+                Object.keys(data).forEach((key) => {
+                    const msg = data[key];
+                    container.innerHTML += `
+                        <div class="admin-chat-msg">
+                            <strong>${msg.studentName} [${msg.studentClass || 'General'}]:</strong> ${msg.message}
+                            <span class="msg-meta">गांव/क्षेत्र: ${msg.village || 'साहदौरा'}</span>
+                        </div>
+                    `;
+                });
+                // नई चैट आते ही बॉक्स को ऑटोमैटिक नीचे स्क्रॉल करना
+                container.scrollTop = container.scrollHeight;
+            } else {
+                container.innerHTML = `<div style="text-align: center; color: #a5a5a5; font-size: 13px; margin-top: 30px;">अभी कोई नया डाउट नहीं आया है।</div>`;
+            }
+        });
+
+        // पूरी चैट हिस्ट्री एक क्लिक में साफ़ करने के लिए
+        function clearAllChats() {
+            if(confirm("क्या आप सचमुच बच्चों के भेजे सारे मैसेज डिलीट करना चाहते हैं?")) {
+                database.ref('chats').remove();
+            }
+        }
+
+        // एडमिन पैनल से बाहर डैशबोर्ड पर जाना
+        function exitAdmin() {
+            if (window.parent && window.parent.changeScreen) {
+                window.parent.changeScreen('dashboard.html');
+            } else {
+                window.location.href = 'dashboard.html';
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <title>माय लाइब्रेरी - Axel Classes</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { background: #0b132b; color: #fff; font-family: 'Segoe UI', sans-serif; padding: 20px; }
+        
+        /* हेडर - वापस और प्रोफाइल फोटो */
+        .top-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .back-link { color: #00b4d8; text-decoration: none; font-size: 16px; font-weight: bold; }
+        .profile-circle { 
+            width: 55px; height: 55px; border-radius: 50%; border: 3px solid #00b4d8; 
+            background: #1c2541; background-size: cover; background-position: center; 
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+        }
+
+        .section-title { color: #00b4d8; margin: 25px 0 15px 0; font-size: 18px; font-weight: bold; border-left: 4px solid #00b4d8; padding-left: 10px; }
+        
+        .course-card { background: #1c2541; padding: 18px; border-radius: 12px; margin-bottom: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        
+        /* प्रोग्रेस और परिणाम ग्रिड */
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .stat-box { background: #1c2541; padding: 20px 10px; border-radius: 12px; text-align: center; border: 1px solid rgba(0, 180, 216, 0.2); }
+        .stat-value { font-size: 22px; font-weight: bold; color: #ffffff; display: block; }
+        .stat-label { font-size: 12px; color: #a5a5a5; margin-top: 5px; }
+        
+        .profile-action-btn { 
+            background: #1c2541; padding: 15px; border-radius: 12px; text-align: center; 
+            margin-top: 20px; border: 1px dashed #00b4d8; cursor: pointer; color: #00b4d8; font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="top-header">
+        <a href="dashboard.html" class="back-link"><i class="fas fa-arrow-left"></i> वापस</a>
+        <div class="profile-circle" id="profile-img-preview" onclick="window.location.href='profile.html'">
+            <i class="fas fa-user"></i>
+        </div>
+    </div>
+    
+    <div class="section-title">मेरे खरीदे गए कोर्सेज</div>
+    <div id="purchasedCourses">
+        <div class="course-card">🚀 लक्ष्य बैच 2026 (सक्रिय)</div>
+        <div class="course-card">🚁 ड्रोन टेक्नोलॉजी कोर्स (सक्रिय)</div>
+    </div>
+
+    <div class="section-title">आपका प्रोग्रेस और परिणाम</div>
+    <div class="stats-grid">
+        <div class="stat-box"><span class="stat-value">45 Hrs</span><div class="stat-label">कुल क्लास समय</div></div>
+        <div class="stat-box"><span class="stat-value">12</span><div class="stat-label">कुल टेस्ट दिए</div></div>
+        <div class="stat-box"><span class="stat-value">85%</span><div class="stat-label">औसत स्कोर</div></div>
+        <div class="stat-box"><span class="stat-value">A+</span><div class="stat-label">परफॉरमेंस ग्रेड</div></div>
+    </div>
+
+    <div class="profile-action-btn" onclick="window.location.href='profile.html'">
+        <i class="fas fa-user-edit"></i> प्रोफाइल सेटअप और जानकारी अपडेट करें
+    </div>
+
+    <script>
+        window.onload = function() {
+            const savedPic = localStorage.getItem('profilePic');
+            if(savedPic) {
+                const circle = document.getElementById('profile-img-preview');
+                circle.style.backgroundImage = `url(${savedPic})`;
+                circle.innerHTML = ""; // आइकन हटाकर फोटो दिखाएं
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Free Course - Axel Coaching Classes</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: #0b132b; color: #fff; padding: 20px; }
+        
+        .back-btn { display: inline-block; padding: 10px 20px; background: #1c2541; border-radius: 10px; color: #00b4d8; text-decoration: none; margin-bottom: 20px; font-weight: bold; border: 1px solid #00b4d8; }
+        
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+        .tab { flex: 1; padding: 12px; background: #1c2541; text-align: center; border-radius: 10px; cursor: pointer; font-weight: 600; border: 1px solid rgba(255,255,255,0.1); }
+        .tab.active { background: #00b4d8; color: #0b132b; }
+
+        .content-box { background: #1c2541; padding: 20px; border-radius: 15px; min-height: 400px; }
+        
+        /* गैलरी के लिए खास स्टाइल */
+        .gallery-container { width: 100%; height: 400px; border-radius: 10px; overflow: hidden; background: #fff; }
+        
+        .item { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: space-between; cursor: pointer; }
+        .item:hover { background: rgba(255,255,255,0.05); border-radius: 10px; }
+        .item i { color: #00b4d8; margin-right: 15px; font-size: 20px; }
+        a { text-decoration: none; color: inherit; width: 100%; display: flex; align-items: center; }
+    </style>
+</head>
+<body>
+
+    <a href="dashboard.html" class="back-btn"><i class="fas fa-arrow-left"></i> होम (Dashboard)</a>
+
+    <div class="tabs">
+        <div class="tab active" onclick="showContent('video')">वीडियो गैलरी</div>
+        <div class="tab" onclick="showContent('pdf')">PDF नोट्स</div>
+        <div class="tab" onclick="showContent('notes')">स्टडी मटेरियल</div>
+    </div>
+
+    <div class="content-box" id="content">
+        <!-- यहाँ कंटेंट आएगा -->
+    </div>
+
+    <script>
+        // आपकी लिंक्स यहाँ कॉन्फ़िगर हैं
+        const links = {
+            video: "https://drive.google.com/embeddedfolderview?id=1fT5O4ZghaDUp24hLtEya9oCeQjYb118A#list",
+            pdf: "https://drive.google.com/drive/folders/1fT5O4ZghaDUp24hLtEya9oCeQjYb118A",
+            notes: "https://drive.google.com/drive/folders/1j4VcqQsa2MJKvoJ7WQMedei-BE1xtLsy"
+        };
+
+        function showContent(type) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+
+            const content = document.getElementById('content');
+            
+            if(type === 'video') {
+                // वीडियो के लिए गैलरी व्यू (Embed)
+                content.innerHTML = `
+                    <div class="gallery-container">
+                        <iframe src="${links.video}" frameborder="0" width="100%" height="100%"></iframe>
+                    </div>
+                `;
+            } else {
+                // PDF और मटेरियल के लिए क्लिक लिंक व्यू
+                content.innerHTML = `
+                    <div class="item">
+                        <a href="${links[type]}" target="_blank">
+                            <i class="fas fa-external-link-alt"></i> 
+                            <span>यहाँ क्लिक करें और ${type === 'pdf' ? 'PDF नोट्स' : 'स्टडी मटेरियल'} देखें</span>
+                        </a>
+                    </div>
+                `;
+            }
+        }
+
+        // शुरुआत में वीडियो गैलरी दिखाएं
+        showContent('video');
+    </script>
+</body>
+</html>

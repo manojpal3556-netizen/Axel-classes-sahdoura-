@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Axel Coaching - नोट्स चयन</title>
+    <style>
+        body { background: #0b132b; color: #fff; padding: 20px; font-family: 'Segoe UI', sans-serif; }
+        .back-btn { display: inline-block; padding: 10px 20px; background: #1c2541; color: #00b4d8; text-decoration: none; border-radius: 10px; margin-bottom: 20px; border: 1px solid #00b4d8; }
+        h2 { color: #00b4d8; margin-bottom: 20px; }
+        select, button { width: 100%; padding: 15px; margin: 10px 0; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); background: #1c2541; color: #fff; font-size: 16px; }
+        button { background: #00b4d8; color: #0b132b; font-weight: bold; cursor: pointer; border: none; }
+        button:hover { background: #0097b2; }
+    </style>
+</head>
+<body>
+    <a href="dashboard.html" class="back-btn">वापस</a>
+    <h2>अपनी कक्षा और विषय चुनें</h2>
+    
+    <select id="classSelect">
+        <option value="">कक्षा चुनें</option>
+        <option value="1-5">कक्षा 1 - 5 (प्राथमिक)</option>
+        <option value="6-8">कक्षा 6 - 8 (माध्यमिक)</option>
+        <option value="9-10">कक्षा 9 - 10 (हाई स्कूल)</option>
+        <option value="skilled">स्किल्ड / वोकेशनल कोर्सेज</option>
+    </select>
+
+    <select id="subjectSelect">
+        <option value="">विषय चुनें</option>
+        <option value="hindi">हिंदी</option>
+        <option value="english">अंग्रेजी</option>
+        <option value="maths">गणित</option>
+        <option value="science">विज्ञान</option>
+        <option value="social">सामाजिक विज्ञान</option>
+        <option value="computer">कंप्यूटर (DCA/MS Office)</option>
+        <option value="drone">ड्रोन टेक्नोलॉजी (Project Manik)</option>
+    </select>
+
+    <button onclick="openDrive()">नोट्स देखें (Open Drive)</button>
+
+    <script>
+        function openDrive() {
+            const cls = document.getElementById('classSelect').value;
+            const sub = document.getElementById('subjectSelect').value;
+            
+            if(!cls || !sub) { 
+                alert("कृपया पहले कक्षा और विषय दोनों चुनें!"); 
+                return; 
+            }
+
+            // आपकी दी हुई गूगल ड्राइव लिंक
+            const driveLink = "https://drive.google.com/drive/folders/1DMV0WPaSPgxc_7T19t2cYVvno7c5kCkn";
+            
+            // यहाँ हम यूजर को सीधा ड्राइव पर भेज रहे हैं
+            window.open(driveLink, "_blank");
+        }
+    </script>
+</body>
+</html>

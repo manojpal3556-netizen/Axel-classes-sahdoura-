@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Setup - Axcel Classes</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, sans-serif; }
+        
+        body { 
+            background-color: #0b132b; 
+            color: #fff; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            user-select: none;
+            padding: 10px;
+        }
+        
+        .auth-container {
+            width: 100%;
+            max-width: 360px; /* मोबाइल स्क्रीन के लिए परफेक्ट चौड़ाई */
+            padding: 20px 22px;
+            background: #1c2541; 
+            border-radius: 16px; 
+            border: 1px solid rgba(255,255,255,0.05);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+            text-align: center;
+        }
+
+        .small-logo-box { 
+            margin-bottom: 12px; 
+        }
+
+        .small-logo-img { 
+            width: 65px; /* लोगो का साइज छोटा किया */
+            height: 65px; 
+            object-fit: contain; 
+            filter: drop-shadow(0 0 6px rgba(0, 180, 216, 0.4)); 
+        }
+
+        h2 { 
+            color: #fff; 
+            margin-bottom: 18px; 
+            font-size: 20px; /* हैडिंग को स्लिम किया */
+            font-weight: 700; 
+            letter-spacing: 0.5px;
+        }
+        
+        .input-group { 
+            position: relative; 
+            margin-bottom: 12px; /* बॉक्स के बीच का गैप कम किया */
+        }
+
+        .input-group i { 
+            position: absolute; 
+            left: 14px; 
+            top: 13px; 
+            color: #00b4d8; 
+            font-size: 15px; 
+        }
+
+        .input-group input, .input-group select {
+            width: 100%; 
+            padding: 12px 12px 12px 40px; /* पैडिंग कम करके बॉक्स पतले किए */
+            background: #0b132b; 
+            border: 1px solid rgba(255,255,255,0.08);
+            color: #fff; 
+            border-radius: 8px; 
+            font-size: 14px; /* मोबाइल के अनुकूल टेक्स्ट साइज */
+            outline: none; 
+            transition: 0.2s;
+        }
+
+        .input-group input:focus, .input-group select:focus { 
+            border-color: #00b4d8; 
+            box-shadow: 0 0 6px rgba(0, 180, 216, 0.2); 
+        }
+
+        .input-group select option { 
+            background: #1c2541; 
+            color: #fff; 
+        }
+
+        .btn-primary {
+            width: 100%; 
+            padding: 12px; /* बटन को ज्यादा मोटा होने से बचाया */
+            background: linear-gradient(90deg, #00b4d8, #0077b6); 
+            color: white;
+            border: none; 
+            border-radius: 8px; 
+            font-size: 15px; 
+            font-weight: bold; 
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 180, 216, 0.3); 
+            transition: 0.2s;
+            margin-top: 6px;
+        }
+
+        .btn-primary:hover { 
+            filter: brightness(1.1); 
+        }
+    </style>
+</head>
+<body>
+
+    <div class="auth-container">
+        <div class="small-logo-box">
+            <img src="https://i.postimg.cc/y8BKshn6/file-00000000fa1071f880f8503b182f9af3.png" alt="Logo" class="small-logo-img">
+        </div>
+        <h2>प्रोफ़ाइल सेटअप</h2>
+        
+        <div class="input-group">
+            <i class="fas fa-user"></i>
+            <input type="text" id="reg-name" placeholder="नाम लिखें">
+        </div>
+        <div class="input-group">
+            <i class="fas fa-id-card"></i>
+            <input type="text" id="reg-surname" placeholder="सरनेम लिखें">
+        </div>
+        <div class="input-group">
+            <i class="fas fa-phone-alt"></i>
+            <input type="tel" id="reg-phone" placeholder="मोबाइल नंबर डालें">
+        </div>
+        <div class="input-group">
+            <i class="fas fa-key"></i>
+            <input type="password" id="reg-pass" placeholder="पासवर्ड बनाएं">
+        </div>
+        <div class="input-group">
+            <i class="fas fa-graduation-cap"></i>
+            <select id="reg-class">
+                <option value="">अपनी क्लास या कोर्स चुनें</option>
+                <option value="Class 1st">कक्षा 1 (Class 1st)</option>
+                <option value="Class 2nd">कक्षा 2 (Class 2nd)</option>
+                <option value="Class 3rd">कक्षा 3 (Class 3rd)</option>
+                <option value="Class 4th">कक्षा 4 (Class 4th)</option>
+                <option value="Class 5th">कक्षा 5 (Class 5th)</option>
+                <option value="Class 6th">कक्षा 6 (Class 6th)</option>
+                <option value="Class 7th">कक्षा 7 (Class 7th)</option>
+                <option value="Class 8th">कक्षा 8 (Class 8th)</option>
+                <option value="Class 9th">कक्षा 9 (Class 9th)</option>
+                <option value="Class 10th">कक्षा 10 (Class 10th)</option>
+                <option value="Skill Based Course">स्किल्स-बेस्ड कोर्स (Skill Based Course)</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <i class="fas fa-globe-asia"></i>
+            <input type="text" id="reg-region" placeholder="अपना क्षेत्र/ग्राम (जैसे: साहदौरा)">
+        </div>
+        
+        <button class="btn-primary" onclick="saveProfileData()">सेव और कंटिन्यू</button>
+    </div>
+
+    <script>
+        function saveProfileData() {
+            const profile = {
+                name: document.getElementById('reg-name').value,
+                surname: document.getElementById('reg-surname').value,
+                phone: document.getElementById('reg-phone').value,
+                pass: document.getElementById('reg-pass').value,
+                userClass: document.getElementById('reg-class').value,
+                region: document.getElementById('reg-region').value
+            };
+
+            if(!profile.name || !profile.phone || !profile.userClass) {
+                alert('कृपया नाम, मोबाइल नंबर और क्लास ज़रूर चुनें!');
+                return;
+            }
+
+            localStorage.setItem('userProfile', JSON.stringify(profile));
+            alert('प्रोफ़ाइल सफलता पूर्वक सेव हो गई!');
+            
+            if (window.parent && window.parent.onModuleComplete) {
+                window.parent.onModuleComplete('profile');
+            }
+        }
+    </script>
+</body>
+</html>
