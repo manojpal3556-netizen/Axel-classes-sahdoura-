@@ -1,1 +1,35 @@
-<meta http-equiv="refresh" content="0; url=dashboard.html">
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Axel Coaching Classes</title>
+    
+    <!-- PWA मैनिफेस्ट (ऐप के नाम और आइकन के लिए) -->
+    <link rel="manifest" href="/manifest.json">
+    
+    <!-- ऐप आइकन -->
+    <link rel="icon" href="https://i.postimg.cc/y8BKshn6/file-00000000fa1071f880f8503b182f9af3.png" type="image/png">
+    
+    <style>
+        body { background-color: #0b132b; color: #fff; display: flex; justify-content: center; align-items: center; height: 100vh; font-family: sans-serif; }
+    </style>
+</head>
+<body>
+    <p>Axel Classes में आपका स्वागत है...</p>
+
+    <script>
+        // चेक करें कि यूजर का प्रोफाइल पहले से बना है या नहीं
+        const savedProfile = localStorage.getItem('userProfile');
+        const session = localStorage.getItem('axcel_user_session');
+
+        if (session || savedProfile) {
+            // अगर लॉगिन है, तो सीधे डैशबोर्ड पर भेजें
+            window.location.href = 'dashboard.html';
+        } else {
+            // अगर नया है, तो लॉगिन स्क्रीन पर भेजें
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>
